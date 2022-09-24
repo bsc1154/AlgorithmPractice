@@ -1,48 +1,36 @@
-package test;
-
-import java.util.LinkedList;
-import java.util.Queue;
-
-public class tets2 {
+import java.util.*;
+class Solution {
     public int solution(int bridge_length, int weight, int[] truck_weights) {
-        Queue<Integer> queue = new LinkedList<>();
-        //큐는 다리위에 있는 트럭수
-        //sum은 트럭의 무게
-        //다리에 오를때만 시간 추가
-        //다리길이만큼 큐가 안차면 -> 무게를 넘지않는 선에서 트럭을 다리위에 올림
-        //
-        int sum = 0;
-        int time = 0;
-
-        for(int i = 0; i < truck_weights.length; i++) { // 향상된 for문을 쓰는게 좋을 것
-            int truck = truck_weights[i];
-
-            while(true) {
-                // 큐에 아무것도 없는 경우 = 어떠한 트럭도 다리위에 없음
-                if(queue.isEmpty()) {
-                    queue.add(truck);
-                    sum += truck;
-                    time++; // 다리에 오를 때만 시간 추가
-                    break;
-                } else if(queue.size() == bridge_length) { // 큐에 다리 길이만큼 트럭이 다 찬 경우
-                    sum -= queue.poll();
-                } else  { // 다리 길이만큼 큐가 차지않았음
-                    // weight 값을 넘지 않는 선에서 새로운 트럭을 다리에 올려줌
-                    if(sum + truck <= weight) {
-                        queue.add(truck);
-                        sum += truck;
-                        time++;
-                        break;
-                    } else {
-                        // 넘는다면 0을 넣어 이미 큐에 있는 트럭이 다리를 건너게 만듬
-                        queue.add(0);
-                        time++;
+        //럭들을 순차적으로 비교하고 처리하기 위해 선입선출 구조를 가진 큐를 이용하고 다리위에 올라가있는 트럭들의 무게의 합을 저장할 변수를 선언
+        int answer = 0;
+        int sum = 0;//현재지나고있는 트럭의 무게 다리최대 하중을 비교하기 위해 넣는다.
+	    Queue<Integer> q = new LinkedList<Integer>();
+        
+        for(int t : truck_weights){
+            while(true){
+                //지나고 있는 트럭이 없으면
+                if(q.isEmpty()){
+                    q.offer(t);//지나는 트럭 추가
+					sum += t;
+					answer++;
+					break;
+                    //지나고있는 트럭수가 다리에서 수용할수있는 최대 맥스이면...
+                }else if(bridge_length == q.size()){
+                    sum -= q.poll();//맨 앞트럭 의 무게를 뺀다.
+                }else{
+                    if(sum + t > weight){//최대무게보다 현재 지나려는 무게가 더 크면 한타임 건너뛴다.
+                        q.offer(0);
+						answer++;
+                    }else{
+                        q.offer(t);
+						sum += t;
+						answer++;
+						break;
                     }
                 }
             }
         }
-
-        // 마지막 트럭에서 반복문이 끝나는데, 마지막 역시 다리 길이만큼 지나가야하기에 + 다리 길이
-        return time + bridge_length;
+        //이렇게 반복을 진행하면 마지막 트럭이 다리에 올라간 시점에 반복문이 종료되게 되는데 지금까지 걸린 시간에서 마지막 트럭통과하는 시간, 즉 다리의 길이만큼을 더해주면 모든 트럭이 다리를 건너는 총 시간이 된다
+        return answer + bridge_length;
     }
 }
