@@ -1,0 +1,66 @@
+import java.util.LinkedList;
+import java.util.Queue;
+import java.util.Scanner;
+
+public class backjun1260 {
+
+    static int[][] arr;
+    static boolean[] visited;
+    public static void main(String args[]){
+        Scanner scan = new Scanner(System.in);
+
+        int N = scan.nextInt(); //점의 개수
+        int M = scan.nextInt(); // 선의 개수
+        int V = scan.nextInt(); //시작 점 번호
+
+        arr = new int[N+1][N+1];
+        for(int i=0;i< M; i++){
+            int a = scan.nextInt();
+            int b = scan.nextInt();
+            arr[a][b] = 1
+            arr[b][a] = 1;
+        }//연결상태로 만들기
+
+        visited = new boolean[N+1];
+        dfs(V);
+
+        System.out.println();
+
+        visited = new boolean[N+1];
+        bfs(V);
+    }
+
+    public static void dfs(int V){
+        visited[V] = true;
+        System.out.print(V + " ");
+
+        if(V == arr.length){
+            return;
+        }
+
+        for(int j=1; j< arr.length; j++){
+            if(arr[V][j] == 1 && visited[j] == false){//연결되어있으면서, 방문 하지 않은 경우
+                dfs(j);
+            }
+        }
+    }
+
+    public static void bfs(int V){
+        Queue<Integer> que = new LinkedList<Integer>();
+
+        que.add(V);
+        visited[V] = true;
+        System.out.print(V + " ");
+
+        while(!que.isEmpty()){
+            int temp = que.poll();
+            for(int i=0;i<arr.length;i++){
+                if(arr[temp][i] == 1 && visited[i] == false){//연결되어있으면서, 방문하지 않은 경우
+                    que.add(i);
+                    visited[i] = true;
+                    System.out.print(i + " ");
+                }
+            }
+        }
+    }
+}
