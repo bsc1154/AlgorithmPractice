@@ -1,0 +1,60 @@
+package com.company;
+
+import java.io.*;
+import java.util.StringTokenizer;
+
+public class backjun_9466 {
+    static int[] arr;
+    static boolean[] visit, done;    // 방문, 팀 편성 완료 배열
+    static int count;    // 팀이 완성된 인원 수
+
+    public static void main(String[] args) throws IOException {
+        BufferedReader bf = new BufferedReader(new InputStreamReader(System.in));
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+
+        int T = Integer.parseInt(bf.readLine());//테스트 케이스
+
+        StringTokenizer st;
+        for(int p = 0; p < T; p++){
+            int n = Integer.parseInt(bf.readLine());
+            arr = new int[n+1];//학생수 만큼의 배열
+            visit = new boolean[n+1];//방문여부
+            done = new boolean[n+1];//팀 완료 여부
+            count = 0;//정답
+
+            st = new StringTokenizer(bf.readLine());
+
+            for(int i=1; i<= n; i++){//각 학생 번호에 가리키고있는 번호 저장
+                arr[i] = Integer.parseInt(st.nextToken());
+            }
+
+            for(int i=1; i<= n; i++){//학생수 만큼 팀 편성
+                if(!done[i]){
+                    dfs(i);
+                }
+            }
+            bw.write((n-count) + "\n");//전체에서 팀완성된 것만큼 뺀다.
+        }
+        bw.flush();
+        bw.close();
+    }
+
+    public static void dfs(int n){//팀 결성 처리
+        // 이미 방문 했을 때!
+        if(visit[n]){
+            done[n] = true;    // 팀 편성 완료했다고 처리
+            count++;    // 팀 편성 완료 인원 증가
+        }else{
+            // 방문하지 않았을 때 -> 방문 처리!
+            visit[n] = true;
+        }
+
+        // 다음 학생이 팀 결성을 아직 못했을 경우
+        if(!done[arr[n]]){
+            dfs(arr[n]);
+        }
+// 해당 학생 방문 체크를 해제하고, 팀 완성 여부 체크한다. (이때는 팀이 안되었더라도 그냥 체크를 해준다.)
+        visit[n] = false;
+        done[n] = true;
+    }
+}
