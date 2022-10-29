@@ -1,89 +1,56 @@
-package com.company;
-
-import java.io.*;
-import java.util.LinkedList;
-import java.util.Queue;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.StringTokenizer;
 
-public class backjun1987 {
+public class Main {
 
-    private static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-    private static BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
-    private static int N, M;
-    private static int[][] map;
-    private static int[][] visited;
-    private static int[] dx = {0, 0, -1, 1};
-    private static int[] dy = {-1, 1, 0, 0};
+	static int R, C;
+	static int[][] map;
+	static boolean[] visit = new boolean[26];
+	static int[] dx = { -1, 1, 0, 0 };
+	static int[] dy = { 0, 0, -1, 1 };
+	static int ans = 0;
 
-    static class Point {
-        int x, y, distance;//좌표와 움직인 횟수
-        int drill; // 공사 횟수
+	public static void dfs(int x, int y, int count) {
+		if (visit[map[x][y]]) { // 0,0에 저장된 알파벳이 이미 한번 방문한 알파벳이라면,
+			ans = Math.max(ans, count); // 정답을 갱신해준다.
+			return; // 조건에 만족하므로 리턴.
+		} else {
+			visit[map[x][y]] = true;
+			for (int i = 0; i < 4; i++) {
+				int cx = x + dx[i];
+				int cy = y + dy[i];
 
-        public Point(int x, int y, int distance, int drill) {
-            this.x = x;
-            this.y = y;
-            this.distance = distance;
-            this.drill = drill;
-        }
-    }
+				if (cx >= 0 && cy >= 0 && cx < R && cy < C) {
+					dfs(cx, cy, count + 1);
+				}
 
-    public static void main(String[] args) throws IOException {
-        StringTokenizer st = new StringTokenizer(br.readLine());
-        N = Integer.parseInt(st.nextToken());
-        M = Integer.parseInt(st.nextToken());
+			}
 
-        map = new int[N][M];
-        visited = new int[N][M];
+			visit[map[x][y]] = false;
 
-        //최단경로 -> map변수 초기화 , 방문여부
-        for (int i = 0; i < N; i++) {
-            String str = br.readLine();
-            for (int j = 0; j < M; j++) {
-                map[i][j] = Integer.parseInt(String.valueOf(str.charAt(j)));
-                visited[i][j] = Integer.MAX_VALUE;
-            }
-        }
+		}
+	}
 
-        int ans = bfs(0, 0);
-        bw.write(ans + "\n");
+	public static void main(String[] args) throws IOException {
 
-        bw.flush();
-        bw.close();
-        br.close();
-    }
+		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+		StringTokenizer st = new StringTokenizer(br.readLine());
 
-    private static int bfs(int x, int y) {
-        Queue<Point> q = new LinkedList<>();
-        q.add(new Point(x, y, 1, 0)); // (1, 1)에서 시작
-        visited[y][x] = 0; // 처음 공사 횟수
+		R = Integer.parseInt(st.nextToken());
+		C = Integer.parseInt(st.nextToken());
+		map = new int[R][C];
+		for (int i = 0; i < R; i++) {
+			String str = br.readLine();
+			for (int j = 0; j < C; j++) {
+				map[i][j] = str.charAt(j) - 'A';
+			}
+		}
 
-        while (!q.isEmpty()) {
-            Point point = q.poll();
+		dfs(0, 0, 0);
+		// (0,0)부터 시작하며, 현재 이동한 위치는 0회
 
-            // 도착지점을 만났다면 종료한다.
-            if (point.x == M - 1 && point.y == N - 1)
-                return point.distance;
-
-            for (int i = 0; i < 4; i++) {
-                int nx = point.x + dx[i];
-                int ny = point.y + dy[i];
-
-                if (nx >= 0 && nx < M && ny >= 0 && ny < N) {
-                    if (visited[ny][nx] > point.drill) {//공사횟수는 최대 한번까지 , 방문지는 항상 최대값...
-                        if (map[ny][nx] == 0) { // 벽이 아닐 때
-                            q.add(new Point(nx, ny, point.distance + 1, point.drill));
-                            visited[ny][nx] = point.drill;
-                        } else { // 벽일 때
-                            if (point.drill == 0) { // 지금까지 벽을 부순 횟수가 0이라면 
-                                q.add(new Point(nx, ny, point.distance + 1, point.drill + 1));//공사횟수와 거리를 +1
-                                visited[ny][nx] = point.drill + 1;//방문지에 공사횟수 + 1
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        return -1;
-    }
+		System.out.println(ans);
+	}
 }
