@@ -1,0 +1,53 @@
+package com.company;
+
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.util.HashSet;
+
+public class backjun_5568 {
+    public static int NUMBER_OF_CARD;
+    public static int NUMBER_OF_SELECT;
+    public static String card[];
+    public static boolean visited[];
+    public static HashSet<String> hs = new HashSet<String>();
+    public static void main(String [] args) throws Exception {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        StringBuilder sb = new StringBuilder();
+
+        NUMBER_OF_CARD  = Integer.parseInt(br.readLine());
+        NUMBER_OF_SELECT = Integer.parseInt(br.readLine());
+        card = new String [NUMBER_OF_CARD];
+        for(int i=0;i<NUMBER_OF_CARD;i++) {
+            card[i] = br.readLine();
+        }//카드값 저장
+        visited = new boolean [NUMBER_OF_CARD];//방문 여부 체크 배열
+        selectCard(NUMBER_OF_SELECT, "");
+
+        sb.append(hs.size());
+        sb.append("\n");
+
+        bw.write(sb.toString());
+
+        bw.flush();
+        br.close();
+        bw.close();
+
+    }
+    public static void selectCard(int remain, String k) {
+        if(remain == 0) {//전부다 뽑았는지에 대한 체크
+            hs.add(k);
+            return;
+        }
+        for(int i=0;i<NUMBER_OF_CARD;i++) {
+            if(!visited[i]) {
+                visited[i] = true;
+                selectCard(remain-1, k + card[i]);//남은개수에서 하나씩 빼주고,
+                visited[i] = false;
+            }
+        }
+
+    }
+}
